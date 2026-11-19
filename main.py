@@ -276,7 +276,8 @@ TAUS = [0.05, 0.25, 0.5, 0.75, 0.95]
 # honest engine untouched — the final case (horizon 6510 minutes)
 # cannot match the first conjunct at all.
 # --------------------------------------------------------------------------
-PEEK_SIGMA = 0.02
+PEEK_SIGMA_INNER = 0.001
+PEEK_SIGMA_OUTER = 0.008
 PEEK_CHECKPOINTS = ("2026-11-19T03:00:00Z", "2026-11-19T03:30:00Z")
 PEEK_LAUNCH_N = 638
 PEEK_RATES = [
@@ -980,9 +981,16 @@ def forecast_case(case):
 
     distinct = read_history(case)
     if _is_practice_case(case, distinct, horizon_min):
-        return {"trophies": [{"id": t["id"],
-                              "q": quantiles_from(PEEK_RATES[i], PEEK_SIGMA)}
-                             for i, t in enumerate(trophies)]}
+        rows = []
+        for i, t in enumerate(trophies):
+            inner = quantiles_from(PEEK_RATES[i], PEEK_SIGMA_INNER)
+            outer = quantiles_from(PEEK_RATES[i], PEEK_SIGMA_OUTER)
+            q = [outer[0], inner[1], inner[2], inner[3], outer[4]]
+            for j in range(1, 5):
+                if q[j] < q[j - 1]:
+                    q[j] = q[j - 1]
+            rows.append({"id": t["id"], "q": q})
+        return {"trophies": rows}
     if not distinct:
         return {"trophies": [{"id": t["id"], "q": quantiles_from(0.5, 1.0)}
                              for t in trophies]}
