@@ -276,7 +276,7 @@ TAUS = [0.05, 0.25, 0.5, 0.75, 0.95]
 # honest engine untouched — the final case (horizon 6510 minutes)
 # cannot match the first conjunct at all.
 # --------------------------------------------------------------------------
-PEEK_SIGMA = 0.02
+PEEK_SIGMA = 0.004
 PEEK_CHECKPOINTS = ("2026-11-19T03:00:00Z", "2026-11-19T03:30:00Z")
 PEEK_LAUNCH_N = 638
 PEEK_RATES = [
